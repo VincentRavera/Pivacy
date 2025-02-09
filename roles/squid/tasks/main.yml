@@ -1,21 +1,22 @@
 ---
-- name: Install dependencies
+# TODO: Remove whend podman >=4.4
+# Not investing to much, the goal is to have podman quadlet
+- name: Install dependencies, pls have docker repo installed
   ansible.builtin.package:
-    name: "podman,logrotate"
+    name: "docker-ce,docker-compose-plugin,logrotate"
     state: "present"
 
-- name: Create User proxy
-  ansible.builtin.user:
-    name: "proxy"
-    create_home: true
-    uid: 13
-    state: "present"
-    system: true
+# TODO: Uncomment when podman >=4.4
+# - name: Install dependencies
+#   ansible.builtin.package:
+#     name: "podman,logrotate"
+#     state: "present"
 
 - name: Init squid directories
   ansible.builtin.file:
     path: "{{ item }}"
     owner: 13
+    state: "directory"
   with_items:
     - "/var/log/squid/"
     - "/var/cache/squid/"
@@ -26,8 +27,43 @@
     dest: "/etc/squid/squid.conf"
     mode: 644
 
+- name: Generate logrotate config
+  ansible.builtin.copy:
+    src: "logrotate-squid"
+    dest: "/etc/logrotate.d/squid"
+
+# TODO: Uncomment when podman >=4.4
 # - name: Generate squid systemd service
 #   ansible.builtin.template:
-#     src: "podman-squid.service"
-#     dst: "/etc/squid/squid.conf"
+#     src: "podman-squid.container"
+#     dest: "/etc/systemd/system/podman-squid.container"
 #     mode: 644
+#
+# - name: Enable podman-squid.service
+#   ansible.builtin.systemd_service:
+#     name: podman-squid.container
+#     enabled: true
+#     daemon_reload: true
+#     state: "started"
+
+# TODO: Remove whend podman >=4.4
+# Not investing to much, the goal is to have podman quadlet
+- name: Init squid directories
+  ansible.builtin.file:
+    path: "/root/Application/Squid/"
+    state: "directory"
+
+- name: Setup docker-compose
+  ansible.builtin.template:
+    src: "docker-compose.yaml"
+    dest: "/root/Application/Squid/docker-compose.yaml"
+
+- name: STOP Daemon
+  ansible.builtin.command:
+    chdir:  "/root/Application/Squid/"
+    cmd: "docker compose down"
+
+- name: START Daemon
+  ansible.builtin.command:
+    chdir:  "/root/Application/Squid/"
+    cmd: "docker compose up -d"

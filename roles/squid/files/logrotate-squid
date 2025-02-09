@@ -1,0 +1,11 @@
+/var/log/squid/cache.log
+/var/log/squid/access.log
+{
+  rotate 5
+  maxsize 50M
+  minsize 45M
+  notifempty
+  hourly
+  missingok
+  compress
+}

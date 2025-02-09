@@ -3,7 +3,7 @@
 # podman generate systemd squid_squid_1 --new
 services:
   squid:
-    image: "ubuntu/squid:5.2-22.04_beta"
+    image: "{{ squid_image }}"
     ports:
       - "3128:3128"
     environment:

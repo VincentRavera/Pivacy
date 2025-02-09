@@ -1,0 +1,21 @@
+# https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+# TODO: test when debian updages podman >= 4.4
+[Unit]
+Description=Squid Server running in Podman
+
+[Container]
+User=13
+Group=13
+Image={{ squid_image }}
+PublishPort=3128:3128
+Environment=TZ=UTC
+Volume=/etc/squid/squid.conf:/etc/squid/squid.conf
+Volume=/var/log/squid:/var/log/squid
+Volume=/var/cache/squid:/var/spool/squid
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+DefaultInstance=100
