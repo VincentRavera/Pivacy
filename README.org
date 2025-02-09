@@ -1,4 +1,4 @@
-#+title: PrivacyPi
+#+title: Pivacy
 
 Bootstrap a raspberrypi with some apps.
 
