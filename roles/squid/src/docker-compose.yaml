@@ -1,0 +1,16 @@
+# To regenerate the podman-squid.service, run:
+# podman-compose up -d
+# podman generate systemd squid_squid_1 --new
+services:
+  squid:
+    image: "ubuntu/squid:5.2-22.04_beta"
+    ports:
+      - "3128:3128"
+    environment:
+      - TZ=UTC
+    volumes:
+      - /var/log/squid:/var/log/squid
+      - /var/cache/squid:/var/spool/squid
+      - /etc/squid/squid.conf:/etc/squid/squid.conf
+      # - /etc/squid/conf.d/:/etc/squid/conf.d/
+    restart: unless-stopped

@@ -1,0 +1,33 @@
+---
+- name: Install dependencies
+  ansible.builtin.package:
+    name: "podman,logrotate"
+    state: "present"
+
+- name: Create User proxy
+  ansible.builtin.user:
+    name: "proxy"
+    create_home: true
+    uid: 13
+    state: "present"
+    system: true
+
+- name: Init squid directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: 13
+  with_items:
+    - "/var/log/squid/"
+    - "/var/cache/squid/"
+
+- name: Generate squid configuration
+  ansible.builtin.template:
+    src: "squid.conf"
+    dest: "/etc/squid/squid.conf"
+    mode: 644
+
+# - name: Generate squid systemd service
+#   ansible.builtin.template:
+#     src: "podman-squid.service"
+#     dst: "/etc/squid/squid.conf"
+#     mode: 644

@@ -1,0 +1,15 @@
+---
+##########################################
+# squid.conf generation
+# Define Local network CIDR
+local_network:
+  - "192.168.0.0/24"
+# Define Local server to connect
+extra_server:
+  - name: "Example"
+    ip: "192.168.0.1/32"
+    ports:
+      - 8008
+##########################################
+# podman-squid.service generation
+squid_image: "ubuntu/squid:5.2-22.04_beta"

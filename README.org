@@ -1,0 +1,36 @@
+#+title: PrivacyPi
+
+Bootstrap a raspberrypi with some apps.
+
+
+** Init your inventory
+
+#+BEGIN_SRC bash
+RASPBERRY_IP="192.168.0.42"
+RASPBERRY_USER="user"
+cat > ./inventory.yaml <<EOF
+all:
+  hosts:
+    raspberry:
+      ansible_host: $RASPBERRY_IP
+      ansible_user: $RASPBERRY_USER
+  vars:
+    # Define Local network CIDR
+    local_network:
+      - "192.168.0.0/24"
+    # Define Local server to connect
+    extra_server:
+      - name: "Synology"
+        ip: "192.168.0.1/32"
+        ports:
+          - 8008
+    ##########################################
+    # podman-squid.service generation
+    squid_image: "ubuntu/squid:5.2-22.04_beta"
+EOF
+#+END_SRC
+
+** Run
+#+BEGIN_SRC bash
+ansible-playbook -i inventory.yaml playbook
+#+END_SRC
