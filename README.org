@@ -15,6 +15,8 @@ all:
       ansible_host: $RASPBERRY_IP
       ansible_user: $RASPBERRY_USER
   vars:
+    ##########################################
+    # Globals
     # Define Local network CIDR
     local_network:
       - "192.168.0.0/24"
@@ -24,9 +26,18 @@ all:
         ip: "192.168.0.1/32"
         ports:
           - 8008
+    #
     ##########################################
+    # SQUID
     # podman-squid.service generation
     squid_image: "ubuntu/squid:5.2-22.04_beta"
+    #
+    ##########################################
+    # PIHOLE
+    pi_hole_password: $(uuidgen | sha256sum | cut -d ' ' -f 1)
+    pihole_image: 'pihole/pihole:latest'
+    #
+    ##########################################
 EOF
 #+END_SRC
 

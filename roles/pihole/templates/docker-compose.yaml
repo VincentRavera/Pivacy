@@ -1,0 +1,23 @@
+# From https://github.com/pi-hole/docker-pi-hole
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+  pihole:
+    container_name: pihole
+    image: {{ pihole_image }}
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "80:80/tcp"
+    environment:
+      TZ: 'Europe/Paris'
+      WEBPASSWORD: {{ pihole_password }}
+      PIHOLE_BASE: /opt/pihole-storage
+      # PIHOLE_UID: 999
+      # PIHOLE_GID: 999
+      # WEB_UID: 33
+      # WEB_GID: 33
+    # Volumes store your data between container upgrades
+    volumes:
+      - '/etc/pihole:/etc/pihole'
+      - '/etc/dnsmasq.d/:/etc/dnsmasq.d'
+    restart: unless-stopped
