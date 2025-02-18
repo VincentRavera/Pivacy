@@ -8,6 +8,9 @@ Role Variables
 
 - pihole_image: (string) the image of pihole
 - pihole_password: (string) the password of admin pihole
+- extra_server: (array of dict) list of local server you want to connect to.
+   - name: (string) hostname, will be added as dns record
+   - ip: (string) ip of your server
 
 Example Playbook
 ----------------

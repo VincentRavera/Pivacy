@@ -9,7 +9,7 @@ Role Variables
 - squid_image: (string) the image of squid
 - local_network: (array of string) list of your network cidr
 - extra_server: (array of dict) list of local server you want to connect to.
-   - name: (string) Comment on your server
+   - name: (string) hostname, will be added as dns record
    - ip: (string) ip of your server
    - ports: (array of int) list of ports allowed
 

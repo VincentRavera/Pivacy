@@ -3,7 +3,7 @@
 # Not investing to much, the goal is to have podman quadlet
 - name: Install dependencies, pls have docker repo installed
   ansible.builtin.package:
-    name: "docker-ce,docker-compose-plugin,logrotate"
+    name: "docker-ce,docker-compose-plugin,logrotate,net-tools,dnsutils"
     state: "present"
 
 # TODO: Uncomment when podman >=4.4
@@ -21,6 +21,27 @@
     - "/etc/pihole/"
     - "/var/log/pihole/"
     - "/etc/dnsmasq.d/"
+
+- name: Bootstrap custom dns, will not override existing config
+  ansible.builtin.lineinfile:
+    path: /etc/pihole/custom.list
+    create: true
+    state: present
+    line: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address']}} {{ item }}"
+    owner: 0
+    group: 0
+    mode: 644
+  with_items:
+    - "pi.hole"
+    - "pihole"
+    - "{{ inventory_hostname }}"
+
+- name: Ensure extraservers are present
+  ansible.builtin.lineinfile:
+    path: /etc/pihole/custom.list
+    line: "{{ item.ip }} {{ item.name }}"
+  with_items: "{{ extra_server }}"
+
 
 # TODO: Implement QUADLET when podman >=4.4
 
@@ -50,3 +71,9 @@
   ansible.builtin.command:
     chdir:  "/root/Application/Pihole/"
     cmd: "docker compose up -d"
+
+- name: Test server up and running
+  ansible.builtin.command:
+    cmd: "nslookup pi.hole {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+  retries: 3
+  delay: 5

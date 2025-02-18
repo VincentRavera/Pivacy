@@ -22,8 +22,8 @@ all:
       - "192.168.0.0/24"
     # Define Local server to connect
     extra_server:
-      - name: "Synology"
-        ip: "192.168.0.1/32"
+      - name: "myserver"
+        ip: "192.168.0.1"
         ports:
           - 8008
     #
@@ -34,7 +34,7 @@ all:
     #
     ##########################################
     # PIHOLE
-    pi_hole_password: $(uuidgen | sha256sum | cut -d ' ' -f 1)
+    pihole_password: $(uuidgen | sha256sum | cut -d ' ' -f 1)
     pihole_image: 'pihole/pihole:latest'
     #
     ##########################################

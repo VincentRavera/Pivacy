@@ -72,3 +72,9 @@
   ansible.builtin.command:
     chdir:  "/root/Application/Squid/"
     cmd: "docker compose up -d"
+
+- name: Test server up and running
+  ansible.builtin.command:
+    cmd: "curl -x 'http://127.0.0.1:3128' https://example.com/ "
+  retries: 3
+  delay: 10
