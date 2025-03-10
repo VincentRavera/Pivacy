@@ -34,6 +34,7 @@
   with_items:
     - "pi.hole"
     - "pihole"
+    - "pihole.home"
     - "{{ inventory_hostname }}"
 
 - name: Ensure extraservers are present
@@ -42,6 +43,15 @@
     line: "{{ item.ip }} {{ item.name }}"
   with_items: "{{ extra_server }}"
 
+- name: Update rproxy
+  ansible.builtin.template:
+    src: "pihole.conf"
+    dest: "/etc/nginx/nginx.d/pihole.conf"
+
+- name: Restart rproxy
+  ansible.builtin.command:
+    chdir:  "/root/Application/rproxy/"
+    cmd: "docker compose restart"
 
 # TODO: Implement QUADLET when podman >=4.4
 

@@ -1,0 +1,55 @@
+- name: Install dependencies
+  ansible.builtin.package:
+    name: "ufw"
+    state: "present"
+
+- name: Allow necessary ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: "tcp"
+  with_items:
+    - "80"
+    - "443"
+    - "ssh"
+
+- name: Start firwall
+  community.general.ufw:
+    state: reloaded
+    policy: allow
+
+- name: Init Reverse proxy directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: 13
+    state: "directory"
+  with_items:
+    - "/var/log/nginx/"
+    - "/etc/nginx/"
+    - "/etc/nginx/conf.d/"
+    - "/root/Application/rproxy/"
+
+- name: Setup nginx root config
+  ansible.builtin.template:
+    src: "nginx.conf"
+    dest: "/etc/nginx/nginx.conf"
+
+- name: Setup docker-compose
+  ansible.builtin.template:
+    src: "docker-compose.yaml"
+    dest: "/root/Application/rproxy/docker-compose.yaml"
+
+- name: Update Image
+  ansible.builtin.command:
+    chdir: "/root/Application/rproxy"
+    cmd: "docker compose pull"
+
+- name: STOP Daemon
+  ansible.builtin.command:
+    chdir: "/root/Application/Pihole/"
+    cmd: "docker compose down"
+
+- name: START Daemon
+  ansible.builtin.command:
+    chdir: "/root/Application/Pihole/"
+    cmd: "docker compose up -d"

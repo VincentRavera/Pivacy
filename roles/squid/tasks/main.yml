@@ -1,4 +1,23 @@
 ---
+- name: Install firewall
+  ansible.builtin.package:
+    name: "ufw"
+    state: "present"
+
+- name: Allow necessary ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: "tcp"
+  with_items:
+    - "ssh"
+    - "3218"
+
+- name: Start firwall
+  community.general.ufw:
+    state: reloaded
+    policy: allow
+
 # TODO: Remove whend podman >=4.4
 # Not investing to much, the goal is to have podman quadlet
 - name: Install dependencies, pls have docker repo installed
