@@ -46,10 +46,10 @@
 
 - name: STOP Daemon
   ansible.builtin.command:
-    chdir: "/root/Application/Pihole/"
+    chdir: "/root/Application/rproxy"
     cmd: "docker compose down"
 
 - name: START Daemon
   ansible.builtin.command:
-    chdir: "/root/Application/Pihole/"
+    chdir: "/root/Application/rproxy"
     cmd: "docker compose up -d"

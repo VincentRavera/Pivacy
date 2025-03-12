@@ -3,8 +3,30 @@
 # Not investing to much, the goal is to have podman quadlet
 - name: Install dependencies, pls have docker repo installed
   ansible.builtin.package:
-    name: "docker-ce,docker-compose-plugin,logrotate,net-tools,dnsutils"
+    name: "docker-ce,docker-compose-plugin,logrotate,net-tools,dnsutils,ufw"
     state: "present"
+
+- name: Allow necessary ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+  with_items:
+    - port: "ssh"
+      proto: "tcp"
+    - port: "8000"
+      proto: "tcp"
+    - port: "8001"
+      proto: "tcp"
+    - port: "53"
+      proto: "udp"
+    - port: "53"
+      proto: "tcp"
+
+- name: Start firwall
+  community.general.ufw:
+    state: reloaded
+    policy: allow
 
 # TODO: Uncomment when podman >=4.4
 # - name: Install dependencies
@@ -19,34 +41,30 @@
     state: "directory"
   with_items:
     - "/etc/pihole/"
+    - "/etc/pihole/hosts/"
     - "/var/log/pihole/"
     - "/etc/dnsmasq.d/"
 
-- name: Bootstrap custom dns, will not override existing config
-  ansible.builtin.lineinfile:
-    path: /etc/pihole/custom.list
-    create: true
-    state: present
-    line: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address']}} {{ item }}"
+- name: add pihole dns entries
+  ansible.builtin.template:
+    src: "pihole.list"
+    dest: "/etc/pihole/hosts/pihole.list"
     owner: 0
     group: 0
     mode: 644
-  with_items:
-    - "pi.hole"
-    - "pihole"
-    - "pihole.home"
-    - "{{ inventory_hostname }}"
 
-- name: Ensure extraservers are present
-  ansible.builtin.lineinfile:
-    path: /etc/pihole/custom.list
-    line: "{{ item.ip }} {{ item.name }}"
-  with_items: "{{ extra_server }}"
+- name: add extra_servers dns entries
+  ansible.builtin.template:
+    src: "extraservers.list"
+    dest: "/etc/pihole/hosts/extraservers.list"
+    owner: 0
+    group: 0
+    mode: 644
 
 - name: Update rproxy
   ansible.builtin.template:
     src: "pihole.conf"
-    dest: "/etc/nginx/nginx.d/pihole.conf"
+    dest: "/etc/nginx/conf.d/pihole.conf"
 
 - name: Restart rproxy
   ansible.builtin.command:
@@ -66,6 +84,9 @@
   ansible.builtin.template:
     src: "docker-compose.yaml"
     dest: "/root/Application/Pihole/docker-compose.yaml"
+    owner: 0
+    group: 0
+    mode: '700'
 
 - name: Update Image
   ansible.builtin.command:

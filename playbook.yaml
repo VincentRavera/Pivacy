@@ -1,11 +1,23 @@
+- name: Run Rproxy setup
+  hosts: all
+  become: yes
+  roles:
+    - rproxy
+
 - name: Setup DNS Server
   hosts: all
   become: yes
   roles:
     - pihole
 
-- name: Run SQUID setup
-  hosts: all
-  become: yes
-  roles:
-    - squid
+# - name: Run SQUID setup
+#   hosts: all
+#   become: yes
+#   roles:
+#     - squid
+
+# - name: Run VPN setup
+#   hosts: all
+#   become: yes
+#   roles:
+#     - vpn

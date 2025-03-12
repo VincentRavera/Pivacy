@@ -11,7 +11,7 @@
     proto: "tcp"
   with_items:
     - "ssh"
-    - "3218"
+    - "3128"
 
 - name: Start firwall
   community.general.ufw:

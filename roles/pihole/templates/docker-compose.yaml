@@ -8,16 +8,12 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
       - "8000:80/tcp"
+      - "8001:443/tcp"
     environment:
       TZ: 'Europe/Paris'
-      WEBPASSWORD: {{ pihole_password }}
+      FTLCONF_webserver_api_password: {{ pihole_password }}
       PIHOLE_BASE: /opt/pihole-storage
-      # PIHOLE_UID: 999
-      # PIHOLE_GID: 999
-      # WEB_UID: 33
-      # WEB_GID: 33
-    # Volumes store your data between container upgrades
+      FTLCONF_dns_listeningMode: 'all'
     volumes:
       - '/etc/pihole:/etc/pihole'
-      - '/etc/dnsmasq.d/:/etc/dnsmasq.d'
     restart: unless-stopped

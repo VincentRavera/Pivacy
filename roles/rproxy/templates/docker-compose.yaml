@@ -1,7 +1,6 @@
 services:
   rproxy:
     image: nginx:latest
-    network_mode: "host"  # Needed to be able to redirect to any host port
     container_name: rproxy
     volumes:
       - /etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro

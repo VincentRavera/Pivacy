@@ -1,0 +1,4 @@
+{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address']}} pi.hole
+{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address']}} pihole
+{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address']}} pihole.home
+{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address']}} {{ inventory_hostname }}
