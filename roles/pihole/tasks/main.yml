@@ -108,3 +108,43 @@
     cmd: "nslookup pi.hole {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
   retries: 3
   delay: 5
+
+- name: Auth to pi-hole
+  ansible.builtin.uri:
+    url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:8000/api/auth"
+    method: POST
+    body_format: json
+    body:
+      password: "{{ pihole_password }}"
+    status_code: 200
+    return_content: true
+  register: login
+
+- name: Add adlist
+  ansible.builtin.uri:
+    url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:8000/api/lists?sid={{ login.json.session.sid }}"
+    method: POST
+    status_code: 201
+    return_content: true
+    body_format: json
+    body:
+      address: '{{ item.address }}'
+      type: block
+      comment: '{{ item.comment }}'
+      groups:
+        - 0
+      enabled: true
+  with_items: '{{ pihole_extra_adlist }}'
+
+- name: Update Adlists
+  ansible.builtin.uri:
+    url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:8000/api/action/gravity?sid={{ login.json.session.sid }}"
+    method: POST
+    status_code: 200
+    return_content: true
+  register:
+    update_output
+
+- name: Update adlist logs
+  debug:
+    msg: "{{ update_output.content }}"

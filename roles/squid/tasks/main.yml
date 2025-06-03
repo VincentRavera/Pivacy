@@ -39,6 +39,7 @@
   with_items:
     - "/var/log/squid/"
     - "/var/cache/squid/"
+    - "/etc/squid/"
 
 - name: Generate squid configuration
   ansible.builtin.template:
